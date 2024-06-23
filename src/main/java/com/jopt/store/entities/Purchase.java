@@ -17,6 +17,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,15 +38,15 @@ public class Purchase {
     @Getter @Setter
     private Integer id;
     
-    @ManyToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @Getter @Setter
     private User buyer;
     
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
+    @Getter @Setter
     @JoinTable(
-            name = "purchase_products",
-            joinColumns = @JoinColumn(name = "product_id"),
-            inverseJoinColumns = @JoinColumn(name = "purchase_id"))
-    private Set<Product> products;
+            name = "purchase_products")
+    private List<Product> products;
     
     @CreationTimestamp
     @Column(updatable = false, name = "created_at")

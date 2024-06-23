@@ -15,6 +15,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
@@ -56,7 +57,7 @@ public class Product {
     private Category category;
     
     @ManyToMany(mappedBy = "products")
-    private Set<Purchase> purchases;
+    private List<Purchase> purchases;
     
     @CreationTimestamp
     @Column(updatable = false, name = "created_at")

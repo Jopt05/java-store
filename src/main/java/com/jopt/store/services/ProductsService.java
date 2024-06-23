@@ -9,6 +9,7 @@ import com.jopt.store.repositories.ProductRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,5 +38,9 @@ public class ProductsService {
     
     public List<Product> getProductsByCategoryId(Integer categoryId) {
         return productsRepository.findByCategory_Id(categoryId);
+    }
+    
+    public Optional<Product> getProductById(Integer id) {
+        return productsRepository.findById(id);
     }
 }
