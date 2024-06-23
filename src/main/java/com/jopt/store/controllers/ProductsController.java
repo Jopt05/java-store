@@ -1,0 +1,70 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package com.jopt.store.controllers;
+
+import com.jopt.store.dtos.CreateProductDto;
+import com.jopt.store.entities.Category;
+import com.jopt.store.entities.Product;
+import com.jopt.store.services.CategoriesService;
+import com.jopt.store.services.ProductsService;
+
+import jakarta.validation.Valid;
+import java.util.List;
+import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
+
+/**
+ *
+ * @author Jesús Puentes
+ */
+@RequestMapping("/api/v1")
+@RestController
+public class ProductsController {
+
+    @Autowired
+    ProductsService productsService;
+    
+    @Autowired
+    CategoriesService categoriesService;
+    
+    @RequestMapping(value = "/products", method = RequestMethod.GET)
+    public List<Product> getAll() {
+        return productsService.getAllProducts();
+    }
+    
+    @RequestMapping(value = "/category/{id}/products", method = RequestMethod.GET)
+    public List<Product> getProductsByCategoryId(@PathVariable Integer id) {
+        return productsService.getProductsByCategoryId(id);
+    }
+    
+    @RequestMapping(value = "/products", method = RequestMethod.POST)
+    public ResponseEntity post(@Valid @RequestBody CreateProductDto createProductDto) {
+        CreateProductDto dto = createProductDto;
+        Optional<Category> category = categoriesService.getCategoryById(dto.getCategory_id());
+        if( category == null ) {
+            throw new ResponseStatusException(
+                HttpStatus.NOT_FOUND, "User not found"
+            );
+        } else {
+            Product product = new Product();
+            product.setCategory(category.get());
+            product.setImageUrl(dto.getImageUrl());
+            product.setName(dto.getName());
+            product.setPrice(dto.getPrice());
+            product.setStock(dto.getStock());
+            productsService.createProduct(product);
+            return new ResponseEntity<>(HttpStatus.CREATED);
+        }
+    }
+    
+}
