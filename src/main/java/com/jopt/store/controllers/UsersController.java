@@ -5,10 +5,14 @@
 package com.jopt.store.controllers;
 
 import com.jopt.store.dtos.CreateUserDto;
+import com.jopt.store.dtos.LoginDto;
 import com.jopt.store.entities.User;
+import com.jopt.store.services.AuthService;
+import com.jopt.store.services.JwtService;
 import com.jopt.store.services.UserService;
 
 import jakarta.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,12 +27,18 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author Jesús Puentes
  */
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/auth")
 @RestController
 public class UsersController {
     
     @Autowired
     UserService usersService;
+    
+    @Autowired
+    AuthService authService;
+    
+    @Autowired
+    JwtService jwtService;
     
     
     @RequestMapping(value = "/users", method = RequestMethod.GET)
@@ -36,16 +46,25 @@ public class UsersController {
         return usersService.getAllUsers();
     }
     
-    @RequestMapping(value = "/users", method = RequestMethod.POST)
+    @RequestMapping(value = "/register", method = RequestMethod.POST)
     public ResponseEntity post(@Valid @RequestBody CreateUserDto createUserDto) {
-        CreateUserDto dto = createUserDto.toDto();
-        User user = new User();
-        user.setEmail(dto.getEmail());
-        user.setAdmin(dto.isAdmin() || false);
-        user.setFullName(dto.getFullName());
-        user.setPassword(dto.getPassword());
-        usersService.createUser(user);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        authService.signup(createUserDto);
+        
+        HashMap<String, String> body = new HashMap();
+        body.put("msg", "Registrado correctamente");
+        return ResponseEntity.ok(body);
+    }
+    
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    public ResponseEntity post(@Valid @RequestBody LoginDto loginDto) {
+        User user = authService.authenticate(loginDto);
+        String jwtToken = jwtService.generateToken(user);
+        
+        HashMap<String, String> body = new HashMap();
+        body.put("token", jwtToken);
+        body.put("msg", "Logueado correctamente");
+        
+        return ResponseEntity.ok(body);
     }
     
 }
