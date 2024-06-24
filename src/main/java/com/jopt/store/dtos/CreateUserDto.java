@@ -28,15 +28,12 @@ public class CreateUserDto {
     @NotBlank(message="FullName is required")
     private String fullName;
     
-    @Getter @Setter
-    private boolean isAdmin;
     
     public CreateUserDto toDto() {
         CreateUserDto dto = new CreateUserDto();
         dto.setEmail(email);
         dto.setFullName(fullName);
         dto.setPassword(password);
-        dto.setAdmin(isAdmin);
         return dto;
     }
 }

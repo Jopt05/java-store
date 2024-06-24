@@ -53,11 +53,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     if (exception instanceof AccessDeniedException) {
         errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(403), exception.getMessage());
         errorDetail.setProperty("description", "You are not authorized to access this resource");
+        return errorDetail;
     }
     
     if (exception instanceof SignatureException) {
       errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(403), exception.getMessage());
       errorDetail.setProperty("description", "Token is invalid");
+      return errorDetail;
+    }
+    
+    if (exception instanceof PermissionsException) {
+      errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(403), exception.getMessage());
+      errorDetail.setProperty("description", "You are not authorized to do this action.");
+      return errorDetail;
     }
     
     return errorDetail;

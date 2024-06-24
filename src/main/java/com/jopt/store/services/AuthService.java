@@ -38,7 +38,7 @@ public class AuthService {
     public User signup(CreateUserDto input) {
         CreateUserDto dto = input.toDto();
         User user = new User();
-        user.setAdmin(dto.isAdmin() || false);
+        user.setAdmin(false);
         user.setEmail(dto.getEmail());
         user.setFullName(dto.getFullName());
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
