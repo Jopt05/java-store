@@ -51,7 +51,7 @@ public class User implements UserDetails {
     @Column(nullable = false, name = "is_admin")
     @Getter @Setter
     @JsonIgnore
-    private boolean isAdmin;
+    private Boolean isAdmin;
     
     @CreationTimestamp
     @Column(updatable = false, name = "created_at")

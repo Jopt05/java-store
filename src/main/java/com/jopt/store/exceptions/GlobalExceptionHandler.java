@@ -68,6 +68,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
       return errorDetail;
     }
     
+    errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(500), "Internal server error");
+    errorDetail.setProperty("description", "Internal server error.");
+    
     return errorDetail;
   }
 }

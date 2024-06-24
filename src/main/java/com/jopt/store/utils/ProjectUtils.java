@@ -21,7 +21,7 @@ public class ProjectUtils {
     public User getUserFromAuth() throws AccessDeniedException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         System.out.println("Auth" + authentication);
-        if( authentication == null || authentication.getPrincipal() == "anonymousUser" ) throw new AccessDeniedException("Error");
+        if( authentication == null || authentication.getPrincipal() == "anonymousUser" ) throw new AccessDeniedException("Endpoint requires Authorization header.");
         User loggedUser = (User) authentication.getPrincipal();
         return loggedUser;
     }

@@ -43,6 +43,10 @@ public class UserService {
         this.usersRepository.save(user);
     }
     
+    public void updateUser(User user) {
+        this.usersRepository.save(user);
+    }
+    
     public Optional<User> findById(Integer id) {
         return this.usersRepository.findById(id);
     }
