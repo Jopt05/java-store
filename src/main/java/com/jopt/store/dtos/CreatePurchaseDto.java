@@ -19,17 +19,12 @@ import lombok.Setter;
 public class CreatePurchaseDto {
     
     @Getter @Setter
-    @NotNull(message = "Buyer_id is required")
-    private Integer buyer_id;
-    
-    @Getter @Setter
     @NotNull(message = "Products ist required")
     @NotEmpty(message = "Products must have at least one item.")
     private String[] products_id;
     
     public CreatePurchaseDto toDto() {
         CreatePurchaseDto dto = new CreatePurchaseDto();
-        dto.setBuyer_id(buyer_id);
         dto.setProducts_id(products_id);
         return dto;
     }

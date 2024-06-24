@@ -21,13 +21,8 @@ public class CreateCategoryDto {
     @NotBlank(message = "Name is required")
     private String name;
     
-    @Getter @Setter
-    @NotNull(message = "Creator_ID is required")
-    private Integer creator_id;
-    
     public CreateCategoryDto toDto() {
         CreateCategoryDto dto = new CreateCategoryDto();
-        dto.setCreator_id(creator_id);
         dto.setName(name);
         return dto;
     }

@@ -7,10 +7,13 @@ package com.jopt.store.controllers;
 import com.jopt.store.dtos.CreateCategoryDto;
 import com.jopt.store.entities.Category;
 import com.jopt.store.entities.User;
+import com.jopt.store.response.BaseResponse;
 import com.jopt.store.services.CategoriesService;
 import com.jopt.store.services.UserService;
+import com.jopt.store.utils.ProjectUtils;
 
 import jakarta.validation.Valid;
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,25 +41,35 @@ public class CategoriesController {
     @Autowired
     UserService usersService;
     
+    @Autowired
+    ProjectUtils projectUtils;
+    
+    private static final String CATEGORIES_OBTAINED = "Categories obtained correctly.";
+    private static final String CATEGORY_CREATED = "Category created correctly.";
+    
     @RequestMapping(value = "/categories", method = RequestMethod.GET)
-    public List<Category> getAll() {
-        return categoriesService.getAllCategories();
+    public ResponseEntity<BaseResponse<Object>> getAll() {
+        List<Category> catList = categoriesService.getAllCategories();
+        
+        return new BaseResponse.BaseResponseBuilder<>()
+                .setHttpStatus(HttpStatus.OK)
+                .setMessage(CATEGORIES_OBTAINED)
+                .setPayload(catList)
+                .build();
     }
     
     @RequestMapping(value = "/categories", method = RequestMethod.POST)
-    public ResponseEntity post(@Valid @RequestBody CreateCategoryDto createCatDto) {
+    public ResponseEntity<BaseResponse<Object>> post(@Valid @RequestBody CreateCategoryDto createCatDto) throws AccessDeniedException {
+        User user = projectUtils.getUserFromAuth();
         CreateCategoryDto dto = createCatDto.toDto();
-        Optional<User> user = usersService.findById(dto.getCreator_id());
-        if( user == null ) {
-            throw new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "User not found"
-            );
-        } else {
-            Category category = new Category();
-            category.setCreator(user.get());
-            category.setName(dto.getName());
-            categoriesService.createCategory(category);
-            return new ResponseEntity<>(HttpStatus.CREATED);
-        }
+        Category category = new Category();
+        category.setCreator(user);
+        category.setName(dto.getName());
+        categoriesService.createCategory(category);
+        
+        return new BaseResponse.BaseResponseBuilder<>()
+                .setHttpStatus(HttpStatus.OK)
+                .setMessage(CATEGORY_CREATED)
+                .setSuccess(true).build();
     }
 }

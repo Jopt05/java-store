@@ -7,10 +7,14 @@ package com.jopt.store.controllers;
 import com.jopt.store.dtos.CreateProductDto;
 import com.jopt.store.entities.Category;
 import com.jopt.store.entities.Product;
+import com.jopt.store.entities.User;
+import com.jopt.store.response.BaseResponse;
 import com.jopt.store.services.CategoriesService;
 import com.jopt.store.services.ProductsService;
+import com.jopt.store.utils.ProjectUtils;
 
 import jakarta.validation.Valid;
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,23 +41,42 @@ public class ProductsController {
     @Autowired
     CategoriesService categoriesService;
     
+    @Autowired
+    ProjectUtils projectUtils;
+    
+    private static final String PRODUCTS_OBTAINED = "Products obtained correctly.";
+    private static final String PRODUCT_CREATED = "Product created correctly";
+    
     @RequestMapping(value = "/products", method = RequestMethod.GET)
-    public List<Product> getAll() {
-        return productsService.getAllProducts();
+    public ResponseEntity<BaseResponse<Object>> getAll() {
+        List<Product> productsList = productsService.getAllProducts();
+        
+        return new BaseResponse.BaseResponseBuilder<>()
+                .setHttpStatus(HttpStatus.OK)
+                .setMessage(PRODUCTS_OBTAINED)
+                .setPayload(productsList)
+                .setSuccess(true).build();
     }
     
     @RequestMapping(value = "/category/{id}/products", method = RequestMethod.GET)
-    public List<Product> getProductsByCategoryId(@PathVariable Integer id) {
-        return productsService.getProductsByCategoryId(id);
+    public ResponseEntity<BaseResponse<Object>> getProductsByCategoryId(@PathVariable Integer id) {
+        List<Product> productsList = productsService.getProductsByCategoryId(id);
+        
+        return new BaseResponse.BaseResponseBuilder<>()
+                .setHttpStatus(HttpStatus.OK)
+                .setMessage(PRODUCTS_OBTAINED)
+                .setPayload(productsList)
+                .setSuccess(true).build();
     }
     
     @RequestMapping(value = "/products", method = RequestMethod.POST)
-    public ResponseEntity post(@Valid @RequestBody CreateProductDto createProductDto) {
+    public ResponseEntity<BaseResponse<Object>> post(@Valid @RequestBody CreateProductDto createProductDto) throws AccessDeniedException {
+        User user = projectUtils.getUserFromAuth();
         CreateProductDto dto = createProductDto;
         Optional<Category> category = categoriesService.getCategoryById(dto.getCategory_id());
         if( category == null ) {
             throw new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "User not found"
+                HttpStatus.NOT_FOUND, "Category not found"
             );
         } else {
             Product product = new Product();
@@ -63,7 +86,11 @@ public class ProductsController {
             product.setPrice(dto.getPrice());
             product.setStock(dto.getStock());
             productsService.createProduct(product);
-            return new ResponseEntity<>(HttpStatus.CREATED);
+            
+            return new BaseResponse.BaseResponseBuilder<>()
+                    .setHttpStatus(HttpStatus.OK)
+                    .setSuccess(true)
+                    .setMessage(PRODUCT_CREATED).build();
         }
     }
     

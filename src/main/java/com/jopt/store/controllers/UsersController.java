@@ -7,6 +7,7 @@ package com.jopt.store.controllers;
 import com.jopt.store.dtos.CreateUserDto;
 import com.jopt.store.dtos.LoginDto;
 import com.jopt.store.entities.User;
+import com.jopt.store.response.BaseResponse;
 import com.jopt.store.services.AuthService;
 import com.jopt.store.services.JwtService;
 import com.jopt.store.services.UserService;
@@ -40,6 +41,9 @@ public class UsersController {
     @Autowired
     JwtService jwtService;
     
+    public static final String CREATED_USER = "User created correctly";
+    public static final String LOGGED_USER = "User logged correctly";
+    
     
     @RequestMapping(value = "/users", method = RequestMethod.GET)
     public List<User> getAll() {
@@ -47,24 +51,23 @@ public class UsersController {
     }
     
     @RequestMapping(value = "/register", method = RequestMethod.POST)
-    public ResponseEntity post(@Valid @RequestBody CreateUserDto createUserDto) {
+    public ResponseEntity<BaseResponse<Object>> post(@Valid @RequestBody CreateUserDto createUserDto) {
         authService.signup(createUserDto);
-        
-        HashMap<String, String> body = new HashMap();
-        body.put("msg", "Registrado correctamente");
-        return ResponseEntity.ok(body);
+        return new BaseResponse.BaseResponseBuilder<>()
+                .setHttpStatus(HttpStatus.OK)
+                .setMessage(CREATED_USER)
+                .setSuccess(true).build();
     }
     
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public ResponseEntity post(@Valid @RequestBody LoginDto loginDto) {
+    public ResponseEntity<BaseResponse<Object>> post(@Valid @RequestBody LoginDto loginDto) {
         User user = authService.authenticate(loginDto);
         String jwtToken = jwtService.generateToken(user);
         
-        HashMap<String, String> body = new HashMap();
-        body.put("token", jwtToken);
-        body.put("msg", "Logueado correctamente");
-        
-        return ResponseEntity.ok(body);
+        return new BaseResponse.BaseResponseBuilder<>()
+                .setHttpStatus(HttpStatus.OK)
+                .setMessage(LOGGED_USER)
+                .setPayload(jwtToken).setSuccess(true).build();
     }
     
 }
