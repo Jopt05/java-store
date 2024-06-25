@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -73,6 +74,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
       errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(404), exception.getMessage());
       errorDetail.setProperty("description", "Resource was not found");
       return errorDetail;
+    }
+    
+    if( exception instanceof BadCredentialsException ) {
+        errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(400), exception.getMessage());
+        errorDetail.setProperty("description", "Invalid credentials");
+        return errorDetail;
     }
     
     errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(500), "Internal server error");
