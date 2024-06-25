@@ -89,11 +89,6 @@ public class UsersController {
         User user = projectUtils.getUserFromAuth();
         if( user.getIsAdmin()== false ) throw new PermissionsException("You are not authorized to perform this action");
         Optional<User> updateUser = usersService.findById(id);
-        if( updateUser.get() == null ) {
-            throw new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "User not found"
-            );
-        }
         UpdateUserDto dto = updateUserDto.toDto();
         updateUser.get().setIsAdmin(dto.getIsAdmin() == null ? updateUser.get().getIsAdmin() : dto.getIsAdmin());
         updateUser.get().setFullName(dto.getFullName() == null ? updateUser.get().getFullName() : dto.getFullName());

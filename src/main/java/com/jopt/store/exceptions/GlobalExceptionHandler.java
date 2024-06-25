@@ -10,6 +10,7 @@ import java.nio.file.AccessDeniedException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
@@ -65,6 +66,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     if (exception instanceof PermissionsException) {
       errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(403), exception.getMessage());
       errorDetail.setProperty("description", "You are not authorized to do this action.");
+      return errorDetail;
+    }
+    
+    if (exception instanceof NoSuchElementException) {
+      errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(404), exception.getMessage());
+      errorDetail.setProperty("description", "Resource was not found");
       return errorDetail;
     }
     
