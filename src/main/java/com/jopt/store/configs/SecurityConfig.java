@@ -42,6 +42,9 @@ public class SecurityConfig {
                 .anyRequest()
                 .authenticated()
                 .and()
+                .cors()
+                .configurationSource(corsConfigurationSource())
+                .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
@@ -57,6 +60,9 @@ public class SecurityConfig {
 
         configuration.setAllowedMethods(List.of("GET","POST"));
         configuration.setAllowedHeaders(List.of("Authorization","Content-Type"));
+        configuration.addAllowedOrigin("*");
+        configuration.addAllowedHeader("*");
+        configuration.addAllowedMethod("*");
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
