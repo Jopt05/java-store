@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 /**
@@ -36,8 +38,8 @@ public class ProductsService {
         productsRepository.save(product);
     }
     
-    public List<Product> getProductsByCategoryId(Integer categoryId) {
-        return productsRepository.findByCategory_Id(categoryId);
+    public Page<Product> getProductsByCategoryId(Integer categoryId, Pageable pageable) {
+        return productsRepository.findAllByCategory_Id(categoryId, pageable);
     }
     
     public Optional<Product> getProductById(Integer id) {
