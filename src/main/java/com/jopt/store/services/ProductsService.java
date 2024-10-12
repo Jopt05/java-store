@@ -45,4 +45,9 @@ public class ProductsService {
     public Optional<Product> getProductById(Integer id) {
         return productsRepository.findById(id);
     }
+    
+    public void decreaseProductStock(Product product) {
+        product.setStock( product.getStock() - 1 );
+        productsRepository.save(product);
+    }
 }

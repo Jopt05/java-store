@@ -8,6 +8,7 @@ import com.jopt.store.dtos.CreatePurchaseDto;
 import com.jopt.store.entities.Product;
 import com.jopt.store.entities.Purchase;
 import com.jopt.store.entities.User;
+import com.jopt.store.exceptions.OutOfStockException;
 import com.jopt.store.response.BaseResponse;
 import com.jopt.store.services.ProductsService;
 import com.jopt.store.services.PurchaseService;
@@ -68,7 +69,7 @@ public class PurchasesController {
     
     @RequestMapping(value = "/users/purchases", method = RequestMethod.POST)
     public ResponseEntity<BaseResponse<Object>> post(
-            @Valid @RequestBody CreatePurchaseDto createPurchaseDto) throws AccessDeniedException {
+            @Valid @RequestBody CreatePurchaseDto createPurchaseDto) throws AccessDeniedException, OutOfStockException {
         User user = projectUtils.getUserFromAuth();
         CreatePurchaseDto dto = createPurchaseDto.toDto();
         List<Product> productsList = new ArrayList();
@@ -76,7 +77,13 @@ public class PurchasesController {
         purchase.setBuyer(user);
         for( String product_id:dto.getProducts_id() ) {
             Optional<Product> product = productsService.getProductById(Integer.valueOf(product_id));
-            if( product != null ) {
+            if( !product.isEmpty() ) {
+                Product dbProduct  = product.get();
+                Long stock = dbProduct.getStock();
+                if( stock == 0 ) {
+                    throw new OutOfStockException("Product " + dbProduct.getName() + " is out of stock");
+                };
+                productsService.decreaseProductStock(dbProduct);
                 productsList.add(product.get());
             }
         }

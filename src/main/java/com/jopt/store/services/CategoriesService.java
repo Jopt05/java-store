@@ -6,6 +6,7 @@ package com.jopt.store.services;
 
 import com.jopt.store.entities.Category;
 import com.jopt.store.repositories.CategoryRepository;
+import com.jopt.store.dtos.CategoryDto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,12 +23,16 @@ public class CategoriesService {
     
     @Autowired
     CategoryRepository categoriesRepository;
+
+    private CategoryDto mapToDto(Category category) {
+        return new CategoryDto(category.getId(), category.getName(), category.getCreatedAt(), category.getUpdatedAt());
+    }
     
-    public List<Category> getAllCategories() {
-        List<Category> categoriesList = new ArrayList();
-        Iterable<Category> catIter = categoriesRepository.findAll();
-        for (Category cat:catIter) {
-            categoriesList.add(cat);
+    public List<CategoryDto> getAllCategories() {
+        List<CategoryDto> categoriesList = new ArrayList();
+        Iterable<Category> categoriesIterable = categoriesRepository.findAll();
+        for(Category categorie:categoriesIterable) {
+            categoriesList.add(this.mapToDto(categorie));
         }
         return categoriesList;
     }

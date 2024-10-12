@@ -69,12 +69,18 @@ public class ProductsController {
         Integer size = 2;
         Pageable pageable = PageRequest.of(page, size);
         
-        Page<Product> productsList = productsService.getProductsByCategoryId(id, pageable);
+        Page<Product> productsPage = productsService.getProductsByCategoryId(id, pageable);
+        
+        if( productsPage.isEmpty() ) {
+            throw new ResponseStatusException(
+                HttpStatus.NOT_FOUND, "Category not found"
+            );
+        }
         
         return new BaseResponse.BaseResponseBuilder<>()
                 .setHttpStatus(HttpStatus.OK)
                 .setMessage(PRODUCTS_OBTAINED)
-                .setPayload(productsList)
+                .setPayload(productsPage)
                 .setSuccess(true).build();
     }
     
@@ -83,7 +89,7 @@ public class ProductsController {
         User user = projectUtils.getUserFromAuth();
         CreateProductDto dto = createProductDto;
         Optional<Category> category = categoriesService.getCategoryById(dto.getCategory_id());
-        if( category == null ) {
+        if( category.isEmpty() ) {
             throw new ResponseStatusException(
                 HttpStatus.NOT_FOUND, "Category not found"
             );

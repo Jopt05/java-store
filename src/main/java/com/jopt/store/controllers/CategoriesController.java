@@ -5,6 +5,7 @@
 package com.jopt.store.controllers;
 
 import com.jopt.store.dtos.CreateCategoryDto;
+import com.jopt.store.dtos.CategoryDto;
 import com.jopt.store.entities.Category;
 import com.jopt.store.entities.User;
 import com.jopt.store.response.BaseResponse;
@@ -51,7 +52,7 @@ public class CategoriesController {
     
     @RequestMapping(value = "/categories", method = RequestMethod.GET)
     public ResponseEntity<BaseResponse<Object>> getAll() {
-        List<Category> catList = categoriesService.getAllCategories();
+        List<CategoryDto> catList = categoriesService.getAllCategories();
         
         return new BaseResponse.BaseResponseBuilder<>()
                 .setHttpStatus(HttpStatus.OK)

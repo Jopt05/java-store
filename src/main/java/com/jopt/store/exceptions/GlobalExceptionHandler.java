@@ -70,6 +70,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
       return errorDetail;
     }
     
+    if (exception instanceof OutOfStockException) {
+      errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(404), exception.getMessage());
+      errorDetail.setProperty("description", exception.getMessage());
+      return errorDetail;
+    }
+    
     if (exception instanceof NoSuchElementException) {
       errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(404), exception.getMessage());
       errorDetail.setProperty("description", "Resource was not found");
